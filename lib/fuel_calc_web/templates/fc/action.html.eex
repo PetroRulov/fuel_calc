@@ -1,0 +1,11 @@
+<%= if @mark == "new_routes" do %>
+    <h1>ADD NEW ROUTES:</h1>
+    <%= render "fc.html", assigns %>
+<% end %>
+
+<%= if @mark == "result" do %>
+    <h1>SHOW RESULTS:</h1>
+    <%= render "results.html", assigns %>
+<% end %>
+
+<span><%= link "Back", to: Routes.page_path(@conn, :index) %></span>

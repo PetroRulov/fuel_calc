@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="default-block">
+    <h3 class="page-header">Results of calculated fuel amount for route(-s):</h3>
+    <br>
+    <div>
+    </div>
+    <ul class="settings-list">
+      <li onclick="displayOrHide('route_config')">To display a result push here, please</li>
+      <hr>
+      <div id="route_config">
+        <ul style="text-align: left; margin: 0;">
+         
+          <h1>Result = <%= @fuel %> kg</h1>
+          
+        <!--</ul><%= submit "DISPLAY" %>-->
+      </div>
+    </ul>    
+  </div>
+</div>

@@ -1,0 +1,150 @@
+<!--Petro🦈Rulov-->
+
+FILE: app.html.eex, line: 8
+<link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+
+FILE: fc.html.eex, line: 14
+<%= for {%{"by" => by, "launch" => launch, "landing" => landing}, i} <- Enum.with_index(@routes) do %>
+
+<div class="container">
+  <div class="default-block">
+    <h3 class="page-header">Automatic Push Settings</h3>
+    <br>
+    <div>
+    </div>
+    <ul class="settings-list">
+      <li onclick="displayOrHide('activation_config')">Activation</li>
+      <hr>
+      <div id="activation_config">
+        <h5 style="display: inline;">
+          Automatic notifications push is <%=bool_to_val(@active?, "activated", "deactivated")%>
+        </h5>
+        <img class="intext-icon" src="<%= Routes.static_path(@conn, "/images/#{bool_to_val(@active?, "check_green", "clear")}.svg")%>">
+        <%= form_for @conn, Routes.auto_push_path(@conn, :update_autopush_config), [style: "display: inline-block;"], fn f -> %>
+          <%= hidden_input f, :type, [value: @type] %>
+          <%= hidden_input f, :active?, [value: not @active?] %>
+          <%= submit "#{bool_to_val(@active?, "deactivate", "activate")}",
+              [class: "#{bool_to_val(@active?, "secondary-button", nil)}", style: "margin-left: 1.0rem"] %>
+        <% end %>
+      </div>
+
+
+<%= form_for @conn, Routes.fc_path(@conn, :calculate), [:routes], fn f -> %>
+<%= hidden_input f, :routes, [name: "routes"] %>
+
+
+
+
+      <li onclick="displayOrHide('time_config')">Push Times</li>
+      <hr>
+      <div id="time_config">
+        <ul style="list-style-type:none; text-align: left; margin: 0;">
+          <%= form_for @conn, Routes.auto_push_path(@conn, :update_autopush_config), [id: "times_list"], fn f -> %>
+          <%= hidden_input f, :type, [value: @type] %>
+          <%= hidden_input f, :push_times, [name: "push_times[]"] %>
+          <%= for {%{"time" => time, "is_vbrief?" => is_vbrief?}, i} <- Enum.with_index(@push_times) do %>
+          <li id="time_<%=i%>">
+              <input type="time"
+                     name="push_times[][time]"
+                     value="<%= time %>"
+                     autocomplete="off" required>
+              <label class="bold-label label-inline" style="margin-left: 2.0rem;">Visual Brief</label>
+              <select name="push_times[][is_vbrief?]" required>
+                <option><%= is_vbrief? %></option>
+                <option>true</option>
+                <option>false</option>
+              </select>
+              <img class="intext-icon"
+                   style="margin-left: 2.0rem;"
+                   onclick="remove('times_list', 'time_<%=i%>')"
+                   src="<%= Routes.static_path(@conn, "/images/remove_circle.svg")%>">
+          </li>
+          <% end %>
+          <li id="new_time">
+              <span style="cursor: pointer; color: #0069d9;"
+                    onclick="appendTime('<%= Routes.static_path(@conn, "/images/remove_circle.svg")%>')">
+                <img class="intext-icon" src="<%= Routes.static_path(@conn, "/images/add_circle.svg")%>">add new
+              </span>
+            </li>
+        </ul><%= submit "update" %>
+        <% end %>
+      </div>
+
+
+      <li onclick="displayOrHide('locales_config')">Locales</li>
+      <hr>
+      <div id="locales_config">
+        <%= form_for @conn, Routes.auto_push_path(@conn, :update_autopush_config),
+            [style: "text-align: left;"], fn f -> %>
+        <div class="multi-select">
+          <%= select f, :locale,
+                [[key: "Select locales", value: "", disabled: true, hidden: true, selected: true]],
+              [autocomplete: "off"] %>
+          <div class="hiding over-select" onclick="toggleMultiselect('locale-checkboxes', 'locale')"></div>
+          <div class="hideable multi-checkbox-list" id="locale-checkboxes">
+            <%= hidden_input f, :type, [value: @type] %>
+            <%= hidden_input f, :locale, [name: "locales[]"] %>
+            <label style="cursor: pointer;" onclick="toggleAll('locales[]', true)">
+              <img class="intext-icon" style="width: 17%;" src="<%=
+                   Routes.static_path(@conn, "/images/check.svg")%>"><i>check all</i></label>
+            <label style="cursor: pointer;" onclick="toggleAll('locales[]', false)">
+              <img class="intext-icon" style="width: 17%;" src="<%=
+                   Routes.static_path(@conn, "/images/clear.svg")%>"><i>uncheck all</i></label>
+            <hr>
+            <%= for locale <- @locales do %>
+                <label for="<%= locale %>">
+                  <%= checkbox f, locale, [name: "locales[]", checked_value: locale,
+                      checked: maybe_selected(locale, @selected_locales),
+                      hidden_input: false, autocomplete: "off"] %>
+                  <%= locale %>
+                </label>
+                <% end %>
+          </div>
+        </div><%= submit "Update", [style: "margin-left: 1.0rem;"] %>
+        <% end %>
+      </div>
+
+      <li onclick="displayOrHide('packages_config')">Packages</li>
+      <hr>
+      <div id="packages_config">
+        <%= form_for @conn, Routes.auto_push_path(@conn, :update_autopush_config),
+            [style: "text-align: left;"], fn f -> %>
+            <div class="multi-select">
+              <%= select f, :package,
+                  [[key: "Select packages", value: "", disabled: true, hidden: true, selected: true]],
+                  [autocomplete: "off"] %>
+              <div class="hiding over-select" onclick="toggleMultiselect('package-checkboxes', 'package')"></div>
+              <div class="hideable multi-checkbox-list" id="package-checkboxes">
+                <%= hidden_input f, :type, [value: @type] %>
+                <%= hidden_input f, :package, [name: "packages[]"] %>
+                <%= for package <- @packages do %>
+                    <label for="<%= package %>">
+                      <%= checkbox f, package, [name: "packages[]", checked_value: package,
+                          checked: maybe_selected(package, @selected_packages),
+                          hidden_input: false, autocomplete: "off"] %>
+                      <%= short_package_name(package) %>
+                    </label>
+                    <% end %>
+              </div>
+            </div><%= submit "Update", [style: "margin-left: 1.0rem;"] %>
+            <% end %>
+      </div>
+      <li onclick="displayOrHide('vBrief_config')">Visual Brief</li>
+      <hr>
+      <div id="vBrief_config">
+        <h5 style="display: inline;">
+          Send the Visual Brief is <%=bool_to_val(@active?, "activated", "deactivated")%>
+        </h5>
+        <img class="intext-icon" src="<%= Routes.static_path(@conn, "/images/#{bool_to_val(@active?, "check_green", "clear")}.svg")%>">
+        <%= form_for @conn, Routes.auto_push_path(@conn, :update_autopush_config), [style: "display: inline-block;"], fn f
+-> %>
+        <%= hidden_input f, :type, [value: @type] %>
+        <%= hidden_input f, :active?, [value: not @active?] %>
+        <%= submit "#{bool_to_val(@active?, "deactivate", "activate")}",
+              [class: "#{bool_to_val(@active?, "secondary-button", nil)}", style: "margin-left: 1.0rem"] %>
+        <% end %>
+      </div>
+    </ul>
+  </div>
+</div>

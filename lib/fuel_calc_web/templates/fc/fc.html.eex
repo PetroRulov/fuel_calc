@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="default-block">
+    <h3 class="page-header">Calculate required fuel amount for route(-s):</h3>
+    <br>
+    <div>
+    </div>
+    <ul class="settings-list">
+      <li onclick="displayOrHide('route_config')">PUSH here to select the routes:</li>
+      <hr>
+      <div id="route_config">
+        <ul style="text-align: left; margin: 0;">
+          <%=form_for @conn, Routes.fc_path(@conn, :calculate), [id: "routes_list"], fn f ->%>
+          <%= hidden_input f, :mark, [name: "mark"]%>
+          <%= hidden_input f, :routes, [name: "routes[]"]%>
+          <%= for {%{"by" => by, "launch" => launch, "landing" => landing}, i} <- Enum.with_index(@routes) do %>
+            <li id="route_<%=i%>">
+
+              <img class="intext-icon"
+                   style="margin-left: 2.0rem;"
+                   onclick="remove('routes_list', 'route_<%=i%>')"
+                   src="<%=Routes.static_path(@conn, "/images/remove_circle.svg")%>">
+            </li>
+          <% end %>
+          <li id="new_route">
+              <span style="cursor: pointer; color: #0069d9;"
+                    onclick="appendRoute('<%= Routes.static_path(@conn, "/images/remove_circle.svg")%>')">
+                <img class="intext-icon" src="<%= Routes.static_path(@conn, "/images/add_circle.svg")%>">add new route
+              </span>
+          </li>
+        </ul><%= submit "CALCULATE" %>
+        <% end %>
+      </div>
+    </ul>    
+  </div>
+</div>
