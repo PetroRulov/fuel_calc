@@ -1,18 +1,17 @@
 defmodule FuelCalc.FcServer do
+  @moduledoc false
 
-	@moduledoc false
-
-	use GenServer
+  use GenServer
 
   require Logger
 
   alias FuelCalc.Computator
 
-	def child_spec(init_args) do
+  def child_spec(init_args) do
     %{
-      	id: __MODULE__,
-      	start: {GenServer, :start_link, [__MODULE__, init_args, [name: __MODULE__]]},
-      	restart: :permanent
+      id: __MODULE__,
+      start: {GenServer, :start_link, [__MODULE__, init_args, [name: __MODULE__]]},
+      restart: :permanent
     }
   end
 
@@ -21,12 +20,12 @@ defmodule FuelCalc.FcServer do
   end
 
   def calculate(params) do
-  	GenServer.call(__MODULE__, {:calculate, params})
+    GenServer.call(__MODULE__, {:calculate, params})
   end
 
-	# Callbacks
-	
-	@impl true
+  # Callbacks
+
+  @impl true
   def init(_init_args) do
     {:ok, %{ref: nil}}
   end
@@ -41,8 +40,8 @@ defmodule FuelCalc.FcServer do
       Task.Supervisor.async_nolink(FuelCalc.TaskSupervisor, fn ->
         Computator.calculate_fuel(params)
       end)
-      result = Task.await(task)
+
+    result = Task.await(task)
     {:reply, result, %{state | ref: task.ref}}
   end
-
 end

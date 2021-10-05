@@ -1,4 +1,6 @@
 defmodule FuelCalcWeb.Router do
+  @moduledoc false
+  
   use FuelCalcWeb, :router
 
   pipeline :browser do
@@ -23,9 +25,9 @@ defmodule FuelCalcWeb.Router do
     get "/fuel/:result", FcController, :result
   end
 
-  #scope "/api", FuelCalcWeb do
+  # scope "/api", FuelCalcWeb do
   #  pipe_through :api
-  #end
+  # end
 
   # Enables the Swoosh mailbox preview in development.
   #

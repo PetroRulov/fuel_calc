@@ -12,7 +12,7 @@
           <%=form_for @conn, Routes.fc_path(@conn, :calculate), [id: "routes_list"], fn f ->%>
           <%= hidden_input f, :mark, [name: "mark"]%>
           <%= hidden_input f, :routes, [name: "routes[]"]%>
-          <%= for {%{"by" => by, "launch" => launch, "landing" => landing}, i} <- Enum.with_index(@routes) do %>
+          <%= for {%{"by" => _by, "launch" => _launch, "landing" => _landing}, i} <- Enum.with_index(@routes) do %>
             <li id="route_<%=i%>">
 
               <img class="intext-icon"

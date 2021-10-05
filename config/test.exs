@@ -8,8 +8,7 @@ config :fuel_calc, FuelCalcWeb.Endpoint,
   server: false
 
 # In test we don't send emails.
-config :fuel_calc, FuelCalc.Mailer,
-  adapter: Swoosh.Adapters.Test
+config :fuel_calc, FuelCalc.Mailer, adapter: Swoosh.Adapters.Test
 
 # Print only warnings and errors during test
 config :logger, level: :warn

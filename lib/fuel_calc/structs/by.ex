@@ -1,5 +1,5 @@
 defmodule FuelCalc.Struct.By do
-
-	defstruct [:name, :weight]
-	
+  @moduledoc false
+  
+  defstruct [:name, :weight]
 end

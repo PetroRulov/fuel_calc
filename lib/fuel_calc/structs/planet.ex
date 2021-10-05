@@ -1,5 +1,5 @@
 defmodule FuelCalc.Struct.Planet do
-
-	defstruct [:name, :gravity, :exponent]
-	
+  @moduledoc false
+  
+  defstruct [:name, :gravity, :exponent]
 end
