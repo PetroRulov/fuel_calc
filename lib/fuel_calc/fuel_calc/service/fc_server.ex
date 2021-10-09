@@ -1,4 +1,4 @@
-defmodule FuelCalc.FcServer do
+defmodule FuelCalc.Service.FcServer do
   @moduledoc false
 
   use GenServer

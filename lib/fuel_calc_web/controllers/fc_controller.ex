@@ -1,7 +1,7 @@
 defmodule FuelCalcWeb.FcController do
   use FuelCalcWeb, :controller
 
-  alias FuelCalc.FcServer
+  alias FuelCalc.Service.FcServer
 
   require Logger
 

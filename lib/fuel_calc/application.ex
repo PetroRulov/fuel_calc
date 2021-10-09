@@ -9,7 +9,7 @@ defmodule FuelCalc.Application do
       FuelCalcWeb.Telemetry,
       {Phoenix.PubSub, name: FuelCalc.PubSub},
       FuelCalcWeb.Endpoint,
-      FuelCalc.FcServer,
+      FuelCalc.Service.FcServer,
       {Task.Supervisor, name: FuelCalc.TaskSupervisor}
     ]
     opts = [strategy: :one_for_one, name: FuelCalc.Supervisor]
