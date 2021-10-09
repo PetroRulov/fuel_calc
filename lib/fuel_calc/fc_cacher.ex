@@ -30,11 +30,4 @@ defmodule FuelCalc.FcCacher do
     true = :ets.insert(@cache, {key, value})
     :ok
   end
-
-  @doc """
-  Check if the cache has key: returns true if does, otherwise false.
-  """
-  def has_key(key) do
-    :ets.member(@cache, key)
-  end
 end

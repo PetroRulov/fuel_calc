@@ -5,12 +5,12 @@
     <div>
     </div>
     <ul class="settings-list">
-      <li onclick="displayOrHide('route_config')">To display a result push here, please</li>
+      <li onclick="displayOrHide('calculation_result')">To display a result push here, please</li>
       <hr>
-      <div id="route_config">
+      <div id="calculation_result">
         <ul style="text-align: left; margin: 0;">
          
-          <h1>Result = <%= @fuel %> kg</h1>
+          <h1>Result = <%= @result %> kg</h1>
           
         <!--</ul><%= submit "DISPLAY" %>-->
       </div>

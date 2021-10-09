@@ -22,21 +22,19 @@ defmodule FuelCalcWeb.FcController do
         calculate_routes(conn, routes)
 
       {%{fuel: fuel}, msg} ->
-        Logger.info("URRRAAAIII!!!")
-
         conn
         |> put_flash(:info, msg)
-        |> render("action.html", fuel: fuel, mark: "result")
+        |> render("action.html", result: fuel, mark: "result")
     end
   end
 
   def define_routes(conn, _) do
-    routes = %{:by => nil, :launch => nil, :landing => nil}
+    routes = %{by: nil, launch: nil, landing: nil}
     render(conn, "action.html", routes: routes, mark: "new_routes")
   end
 
-  def result(conn, %{fuel: fuel}) do
-    render(conn, "results.html", fuel: fuel)
+  def result(conn, %{"result" => result}) do
+    render(conn, "results.html", %{result: result})
   end
 
   defp calculate_routes(conn, routes) do
@@ -44,7 +42,7 @@ defmodule FuelCalcWeb.FcController do
       {:ok, {%{fuel: fuel}, msg}} ->
         conn
         |> put_flash(:info, msg)
-        |> render("action.html", fuel: fuel, mark: "result")
+        |> render("action.html", result: fuel, mark: "result")
 
       {:error, message} ->
         conn
