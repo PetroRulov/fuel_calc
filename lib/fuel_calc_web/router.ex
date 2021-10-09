@@ -1,6 +1,6 @@
 defmodule FuelCalcWeb.Router do
   @moduledoc false
-  
+
   use FuelCalcWeb, :router
 
   pipeline :browser do

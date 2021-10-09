@@ -5,6 +5,8 @@ defmodule FuelCalc.Application do
 
   @impl true
   def start(_type, _args) do
+    _ = FuelCalc.FcCacher.start()
+
     children = [
       FuelCalcWeb.Telemetry,
       {Phoenix.PubSub, name: FuelCalc.PubSub},
@@ -12,6 +14,7 @@ defmodule FuelCalc.Application do
       FuelCalc.Service.FcServer,
       {Task.Supervisor, name: FuelCalc.TaskSupervisor}
     ]
+
     opts = [strategy: :one_for_one, name: FuelCalc.Supervisor]
     Supervisor.start_link(children, opts)
   end

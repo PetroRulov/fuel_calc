@@ -1,6 +1,7 @@
 defmodule FuelCalcWeb.FcController do
   use FuelCalcWeb, :controller
 
+  alias FuelCalc.FcCacher
   alias FuelCalc.Service.FcServer
 
   require Logger
@@ -9,20 +10,23 @@ defmodule FuelCalcWeb.FcController do
     [_ | def_routes] = aux_routes
 
     routes =
-      Enum.map(Enum.chunk_every(def_routes, 3), fn [by, launch, landing] ->
-        Map.merge(by, Map.merge(launch, landing))
-      end)
+      Enum.map(
+        Enum.chunk_every(def_routes, 3),
+        fn [by, launch, landing] ->
+          Map.merge(by, Map.merge(launch, landing))
+        end
+      )
 
-    case FcServer.calculate(routes) do
-      {:ok, %{fuel: fuel, msg: msg}} ->
+    case FcCacher.get(routes) do
+      nil ->
+        calculate_routes(conn, routes)
+
+      {%{fuel: fuel}, msg} ->
+        Logger.info("URRRAAAIII!!!")
+
         conn
         |> put_flash(:info, msg)
         |> render("action.html", fuel: fuel, mark: "result")
-
-      {:error, message} ->
-        conn
-        |> put_flash(:error, message)
-        |> redirect(to: Routes.fc_path(conn, :define_routes))
     end
   end
 
@@ -33,5 +37,19 @@ defmodule FuelCalcWeb.FcController do
 
   def result(conn, %{fuel: fuel}) do
     render(conn, "results.html", fuel: fuel)
+  end
+
+  defp calculate_routes(conn, routes) do
+    case FcServer.calculate(routes) do
+      {:ok, {%{fuel: fuel}, msg}} ->
+        conn
+        |> put_flash(:info, msg)
+        |> render("action.html", fuel: fuel, mark: "result")
+
+      {:error, message} ->
+        conn
+        |> put_flash(:error, message)
+        |> redirect(to: Routes.fc_path(conn, :define_routes))
+    end
   end
 end

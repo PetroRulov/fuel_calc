@@ -1,6 +1,7 @@
 defmodule FuelCalc.Computator do
   @moduledoc false
 
+  alias FuelCalc.FcCacher
   alias FuelCalc.Helpers
 
   require Logger
@@ -10,7 +11,7 @@ defmodule FuelCalc.Computator do
   @launch_round 33
   @landing_round 42
 
-  @spec calculate_fuel(list()) :: {:ok, map()} | {:error, binary()}
+  @spec calculate_fuel(list()) :: {:ok, tuple()} | {:error, binary()}
   def calculate_fuel([%{"launch" => launch} | _tail])
       when launch != "Earth" do
     {:error, "Wrong route: First spaceship launch should always be from planet Earth!!!"}
@@ -26,7 +27,7 @@ defmodule FuelCalc.Computator do
       false ->
         case check_one_transport(params) do
           {:ok, _} ->
-            calculate_fuel(reversed_routes, [], 0)
+            calculate_fuel(params, reversed_routes, [], 0)
 
           {:error, msg} ->
             {:error, msg}
@@ -34,23 +35,24 @@ defmodule FuelCalc.Computator do
     end
   end
 
-  defp calculate_fuel([], acc, total) do
-    {:ok,
-     %{:routes => acc, :fuel => total, :msg => "SUCCESS: minimum required fuel amount: #{total}"}}
+  defp calculate_fuel(cache_key, [], acc, total) do
+    msg = "SUCCESS: minimum required fuel amount: #{total}"
+    result_map = %{:routes => acc, :fuel => total}
+    FcCacher.put(cache_key, {result_map, msg})
+    {:ok, {result_map, msg}}
   end
 
-  defp calculate_fuel([head | tail], acc, append_fuel) do
+  defp calculate_fuel(cache_key, [head | tail], acc, append_fuel) do
     case calculate_route(head, append_fuel) do
       {:error, message} ->
         {:error, message}
 
       fuel when is_integer(fuel) ->
-        calculate_fuel(tail, [{head, fuel} | acc], fuel + append_fuel)
+        calculate_fuel(cache_key, tail, [{head, fuel} | acc], fuel + append_fuel)
     end
   end
 
-  defp calculate_route(%{"by" => by, "launch" => same, "landing" => same}, _) do
-    Logger.error("Space flight by #{by} from #{same} to #{same}")
+  defp calculate_route(%{"launch" => same, "landing" => same}, _) do
     {:error, "Wrong destination: Launch planet and landing planet are the SAME"}
   end
 
