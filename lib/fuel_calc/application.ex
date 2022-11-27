@@ -6,6 +6,7 @@ defmodule FuelCalc.Application do
   @impl true
   def start(_type, _args) do
     _ = FuelCalc.FcCacher.start()
+    _ = :ets.new(:expert, [:set, :public, :named_table])
 
     children = [
       FuelCalcWeb.Telemetry,

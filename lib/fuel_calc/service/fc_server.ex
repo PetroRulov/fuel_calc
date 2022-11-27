@@ -23,6 +23,19 @@ defmodule FuelCalc.Service.FcServer do
     GenServer.call(__MODULE__, {:calculate, params})
   end
 
+  def print(params) do
+    GenServer.cast(__MODULE__, {:print, params})
+  end
+
+  def put_expert(params) do
+    GenServer.cast(__MODULE__, {:put_expert, params})
+  end
+
+  def put_into_expert(params) do
+    _ = :ets.insert_new(:expert, params)
+    IO.inspect(:ets.tab2list(:expert), label: "EXPERT")
+  end
+
   # Callbacks
 
   @impl true
@@ -43,5 +56,40 @@ defmodule FuelCalc.Service.FcServer do
 
     result = Task.await(task)
     {:reply, result, %{state | ref: task.ref}}
+  end
+
+  @impl true
+  def handle_cast({:print, []}, state) do
+    IO.inspect([], label: "EMPTY_PARAMS")
+    {:noreply, %{state | ref: nil}}
+  end
+
+  def handle_cast({:print, params}, state) do
+    IO.inspect(params, label: "PARAMS_TO_PRINT")
+    {:noreply, %{state | ref: nil}}
+  end
+
+  def handle_cast({:put_expert, {_key, _value} = params}, state) do
+    put_into_expert(params)
+
+    case Node.list() do
+      [] ->
+        Logger.debug "NO CLUSTER"
+        :ok
+      nodes_list ->
+        Logger.debug "CLUSTER EXISTS!!!"
+        :ok = make_rpc_cast(nodes_list, params)
+    end
+
+    {:noreply, %{state | ref: nil}}
+  end
+
+  defp make_rpc_cast([], _params) do
+    :ok
+  end
+
+  defp make_rpc_cast([h | t], params) do
+    :rpc.cast(h, __MODULE__, :put_into_expert, [params]) 
+    make_rpc_cast(t, params)
   end
 end
