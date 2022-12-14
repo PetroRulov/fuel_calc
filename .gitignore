@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-xinewsadmind-*.tar
+fuel_calc-*.tar
 
 # Since we are building assets from assets/,
 # we ignore priv/static. You may want to comment
@@ -82,3 +82,4 @@ rebar3
 .erlang.mk/*
 accounts_mng.d
 xrefr
+.tool-versions
