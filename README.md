@@ -9,11 +9,11 @@ The user builds a route out of launch and landing steps and picks a spaceship. T
 computes the fuel needed for every step, including the **fuel needed to carry the fuel** — the calculation is
 repeated recursively until the additional fuel becomes zero or negative.
 
-| Spaceship      | Mass (kg) |   | Planet | Gravity (m/s²) |
-|----------------|-----------|---|--------|----------------|
-| Apollo_11      | 28 801    |   | Earth  | 9.807          |
-| Mars_Mission   | 14 606    |   | Mars   | 3.711          |
-| Passenger_Ship | 75 432    |   | Moon   | 1.62           |
+| Spaceship      | Mass (kg) | Planet | Gravity (m/s²) |
+|----------------|-----------|--------|----------------|
+| Apollo_11      | 28 801    | Earth  | 9.807          |
+| Mars_Mission   | 14 606    | Mars   | 3.711          |
+| Passenger_Ship | 75 432    | Moon   | 1.62           |
 
 Formulas (rounded down):
 - launch: `mass × gravity × 0.042 − 33`
