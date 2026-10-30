@@ -1,7 +1,8 @@
 # FuelCalc
 
 A **Phoenix web application** that calculates the fuel needed for a multi-step space flight
-(for example Earth → Moon → Earth), written in **Elixir** (Solution to a well-known Elixir take-home assignment).
+(for example Earth → Moon → Earth), written in **Elixir**. 
+[My solution to a popular Elixir take-home coding assignment, built as a complete Phoenix application].
 
 ## How it works
 
