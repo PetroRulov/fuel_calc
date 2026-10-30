@@ -1,22 +1,59 @@
 # FuelCalc
 
-To start your Phoenix server:
+A **Phoenix web application** that calculates the fuel needed for a multi-step space flight
+(for example Earth → Moon → Earth), written in **Elixir**.
 
-  * Install dependencies with `mix deps.get`
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## How it works
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+The user builds a route out of launch and landing steps and picks a spaceship. The app validates the route and
+computes the fuel needed for every step, including the **fuel needed to carry the fuel** — the calculation is
+repeated recursively until the additional fuel becomes zero or negative.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+| Spaceship      | Mass (kg) |   | Planet | Gravity (m/s²) |
+|----------------|-----------|---|--------|----------------|
+| Apollo_11      | 28 801    |   | Earth  | 9.807          |
+| Mars_Mission   | 14 606    |   | Mars   | 3.711          |
+| Passenger_Ship | 75 432    |   | Moon   | 1.62           |
 
-## Prerequisites
+Formulas (rounded down):
+- launch: `mass × gravity × 0.042 − 33`
+- landing: `mass × gravity × 0.033 − 42`
 
-- [Erlang 24+](http://www.erlang.org/download.html)
-- [Elixir 1.12+](http://elixir-lang.org/install.html)
-- [Node.js 10.19.0+](https://nodejs.org/en/download/)
+The route is calculated backwards from the final landing, because each earlier step must also lift the fuel for every later step.
 
-## Development Setup
-1. Fetch dependencies - `mix deps.get`
-2. Fetch Node.js dependencies - `cd assets && npm install && cd ..`
-3. Start dev environment - `iex -S mix phx.server`
-4. Open WEB app in your browser - `http://localhost:4000`
+### Validation rules
+
+- The flight must start on Earth and end on Earth
+- Launch and landing planet of a step must be different
+- One spaceship for the whole route
+- Unknown planets or spaceships are rejected with a clear error message
+
+## Architecture
+
+- `FuelCalc.Computator` — recursive fuel calculation and route validation (pure functions, pattern matching)
+- `FuelCalc.Service.FcServer` — GenServer entry point; each calculation runs in a task under `Task.Supervisor`
+- `FuelCalc.FcCacher` — ETS-based cache: repeated identical routes are answered from memory without recalculation
+- `FuelCalc.Repo` — in-memory catalogue of planets and spaceships
+
+## Tech stack
+
+Elixir · Phoenix 1.6 · GenServer · Task.Supervisor · ETS · ExUnit · ExCoveralls · Credo
+
+## Getting started
+
+Requirements: Erlang/OTP 24+, Elixir 1.12+, Node.js (for assets).
+
+```bash
+mix deps.get
+cd assets && npm install && cd ..
+iex -S mix phx.server
+```
+
+Open <http://localhost:4000/fuel>.
+
+## Tests
+
+```bash
+mix test
+mix coveralls.html
+```
